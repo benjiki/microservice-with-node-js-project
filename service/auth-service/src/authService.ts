@@ -46,6 +46,23 @@ export class AuthService {
     return this.generateTokens(user.id, user.email);
   }
 
+  async login(email: string, password: string): Promise<AuthTokens> {
+    // find the user
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+    });
+    if (!user) {
+      throw createServiceError("Invalid email or password", 401);
+    }
+
+    //verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw createServiceError("Invalid email or password", 401);
+    }
+    //generate tokens
+    return this.generateTokens(user.id, user.email);
+  }
   private async generateTokens(
     userId: string,
     email: string
