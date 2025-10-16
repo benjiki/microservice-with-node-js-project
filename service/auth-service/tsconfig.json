@@ -1,14 +1,9 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
     "target": "ES2020",
     "module": "commonjs",
-    "types": [],
+    "types": ["node"],
     "lib": ["esnext"],
     "outDir": "./dist",
     "strict": false,
@@ -26,12 +21,12 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch":true,
     "moduleResolution": "node",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@shared/*": ["../shared/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["../../shared/*"]
     }
   },
-  "include": ["src/**/*", "../shared/**/*"],
+  "include": ["src/**/*","../../shared/**/*","prisma/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
