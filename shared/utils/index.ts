@@ -14,6 +14,17 @@ export function createApiResponse<T = any>(
   };
 }
 
+export function createSuccessResponse<T = any>(
+  data?: T,
+  message?: string
+): ApiResponse<T> {
+  return createApiResponse(true, data, message);
+}
+
+export function createErrorResponse(error: string): ApiResponse {
+  return createApiResponse(false, undefined, undefined, error);
+}
+
 export function createServiceError(
   message: string,
   statusCode: number = 500,
