@@ -1,9 +1,11 @@
+import { create } from "domain";
 import { AuthTokens, JwtPayload, ServiceError } from "../../../shared/types";
 import { createServiceError } from "../../../shared/utils";
 import prisma from "../prisma/database";
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { StringValue } from "ms";
+import e from "express";
 export class AuthService {
   // AuthService implementation
   private readonly jwtSecret: string;
@@ -96,6 +98,35 @@ export class AuthService {
         throw error;
       }
       throw createServiceError("Invalid refresh token", 401);
+    }
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    // Delete the refresh token from the database
+    await prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
+  }
+
+  async validateToken(token: string): Promise<JwtPayload> {
+    try {
+      const decoded = jwt.verify(token, this.jwtSecret) as JwtPayload;
+
+      // check if user exists
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+      });
+
+      if (!user) {
+        throw createServiceError("User not found", 404);
+      }
+
+      return decoded;
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        throw createServiceError("Invalid token", 401);
+      }
+      throw createServiceError("Token validation failed", 500, error);
     }
   }
 
