@@ -1,6 +1,6 @@
-import { AuthTokens } from "@shared/types";
-import { createServiceError } from "@shared/utils";
-import prisma from "prisma/database";
+import { AuthTokens } from "../../../shared/types";
+import { createServiceError } from "../../../shared/utils";
+import prisma from "../prisma/database";
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { StringValue } from "ms";
