@@ -1,11 +1,10 @@
-import { create } from "domain";
 import { AuthTokens, JwtPayload, ServiceError } from "../../../shared/types";
 import { createServiceError } from "../../../shared/utils";
 import prisma from "../prisma/database";
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { StringValue } from "ms";
-import e from "express";
+
 export class AuthService {
   // AuthService implementation
   private readonly jwtSecret: string;

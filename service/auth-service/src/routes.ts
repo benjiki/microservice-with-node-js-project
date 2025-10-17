@@ -29,4 +29,5 @@ router.post("/validate-token", authController.validateToken);
 // Protected route
 router.get("/profile", authController.getProfile);
 router.delete("/delete-account", authController.deleteAccount);
+
 export default router;
