@@ -1,4 +1,4 @@
-import { AuthTokens } from "../../../shared/types";
+import { AuthTokens, JwtPayload, ServiceError } from "../../../shared/types";
 import { createServiceError } from "../../../shared/utils";
 import prisma from "../prisma/database";
 import bcrypt from "bcryptjs";
@@ -63,6 +63,42 @@ export class AuthService {
     //generate tokens
     return this.generateTokens(user.id, user.email);
   }
+
+  async refreshToken(refreshToken: string): Promise<AuthTokens> {
+    try {
+      // Verify the refresh token
+      const decoded = jwt.verify(
+        refreshToken,
+        this.jwtRefreshSecret
+      ) as JwtPayload;
+      // Check if the refresh token exists in the database
+      const storedToken = await prisma.refreshToken.findUnique({
+        where: { token: refreshToken },
+        include: { user: true },
+      });
+      if (!storedToken || storedToken.expiresAt < new Date()) {
+        throw createServiceError("Invalid refresh token", 401);
+      }
+
+      // Generate new tokens
+      const tokens = await this.generateTokens(
+        storedToken.userId,
+        storedToken.user.email
+      );
+
+      // Delete the old refresh token
+      await prisma.refreshToken.delete({
+        where: { id: storedToken.id },
+      });
+      return tokens;
+    } catch (error) {
+      if (error instanceof ServiceError) {
+        throw error;
+      }
+      throw createServiceError("Invalid refresh token", 401);
+    }
+  }
+
   private async generateTokens(
     userId: string,
     email: string
