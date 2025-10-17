@@ -175,4 +175,26 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async getUserById(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!user) {
+      throw createServiceError("User not found", 404);
+    }
+    return user;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+  }
 }
