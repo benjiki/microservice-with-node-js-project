@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import authRouter from "./routes";
+import { error } from "console";
+import { errorHandler } from "../../../shared/middleware";
 // Load environment variables from .env file
 dotenv.config();
 
@@ -19,6 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // setup api routes
 app.use("/api/auth", authRouter);
+
+// error handling middleware
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Auth service is running on port ${PORT}`);
